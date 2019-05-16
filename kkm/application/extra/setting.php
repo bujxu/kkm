@@ -1,9 +1,9 @@
 <?php
 
 return [
-    'img_prefix' => 'https://fraterntiy.bujxu.com/fraterntiy/public/static/upload/image/',
+    'img_prefix' => 'https://fraterntiy.bujxu.com/kkm/public/static/upload/image/',
     'token_expire_in' => 7200,
-    'web_url' => 'https://fraterntiy.bujxu.com/mtjs/', 
+    'web_url' => 'https://fraterntiy.bujxu.com/kkm/', 
     'QRcode' => 'public/static/upload/QRcode/',
     'upload_config' => 
     array (
