@@ -19,6 +19,50 @@ class Good
         return $goodInfo;
     }
 
+    public function shoppingCartDelete()
+    {
+        $id = input('post.shoppingCartId');
+        $userId = TokenService::getCurrentUid();
+
+        GoodService::shoppingCartDelete($id);
+        return self::getShoppingCart();
+    }
+
+    public function shoppingCartAdd()
+    {
+        $content = input('get.');
+        $userId = TokenService::getCurrentUid();
+        $result = GoodService::shoppingCartAdd($userId, $content);
+
+        return $result;
+    }
+
+    public function getShoppingCart()
+    {
+        $userId = TokenService::getCurrentUid();
+        return GoodService::getShoppingCart($userId);
+    }
+
+    public function getCategory()
+    {
+        $userId = TokenService::getCurrentUid();
+        return GoodService::getCategoryInfo();
+    }
+
+    public function goodCategoryCreate()
+    {
+        // $id = input('get.good_id');
+        $content = input('post.');
+        $categoryId = GoodService::goodCategoryCreate($content);
+
+        return $categoryId;
+    }
+
+    public function goodCategoryEdit()
+    {
+        GoodService::goodCategoryEdit();
+        return;
+    }
     // public function getGroupUsers($groupId='')
     // {
     //     // (new GroupUsersGet)->goCheck();

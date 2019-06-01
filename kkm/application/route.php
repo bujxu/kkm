@@ -75,6 +75,13 @@ Route::get('api/:version/good/goodList', 'api/:version.Good/goodList');
 Route::get('api/:version/good/getGoodShareQCode', 'api/:version.Good/getGoodShareQCode');
 Route::get('api/:version/good/goodDelete', 'api/:version.Good/goodDelete');
 Route::get('api/:version/good/getGoodInfo', 'api/:version.Good/getGoodInfo');
+Route::get('api/:version/good/getCategory', 'api/:version.Good/getCategory');
+Route::post('api/:version/good/goodCategoryCreate', 'api/:version.Good/goodCategoryCreate');
+Route::post('api/:version/good/goodCategorySave', 'api/:version.Good/goodCategorySave');
+Route::get('api/:version/good/shoppingCartAdd', 'api/:version.Good/shoppingCartAdd');
+Route::get('api/:version/good/getShoppingCart', 'api/:version.Good/getShoppingCart');
+Route::post('api/:version/good/shoppingCartDelete', 'api/:version.Good/shoppingCartDelete');
+
 //shop
 Route::get('api/:version/shop/getShopInfo', 'api/:version.Shop/getShopInfo');
 Route::get('api/:version/shop/getMyShopInfo', 'api/:version.Shop/getMyShopInfo');

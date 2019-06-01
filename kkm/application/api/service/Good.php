@@ -7,7 +7,9 @@ use app\api\model\UserGood as UserGoodModel;
 use app\api\model\UserShop as UserShopModel;
 use app\api\model\UserAddress;
 use app\api\model\Good as GoodModel;
+use app\api\model\Category as CategoryModel;
 use app\api\model\Shop as ShopModel;
+use app\api\model\ShoppingCart as ShoppingCartModel;
 use app\api\model\Image as ImageModel;
 use app\api\service\Good as GoodService;
 use \app\api\service\Token as TokenService;
@@ -29,6 +31,7 @@ class Good
             $good->good_desc = $content['good_desc'];
             $good->market_price = $content['market_price'];
             $good->good_stock = $content['good_stock'];
+            $good->image_head_id = $content['image_head_id'];
             $good->time = time();
     
             $good->save();
@@ -37,6 +40,43 @@ class Good
             self::createGoodImage($good->id, $good_img_detail, 1);
 
             return $good->id;
+        }
+        catch (Exception $ex)
+        {
+            Db::rollback();
+            throw $ex;
+        }
+
+    }
+    public static function goodCategoryCreate($content)
+    {   
+        $category = new CategoryModel();
+        // $category->user_id = $userId;
+        $category->name = $content['categoryName'];
+        $category->image = $content['categoryImageId'];
+
+        // $category->time = time();
+
+        $category->save();
+
+        return $category->id;
+    }
+    
+    public static function goodCategoryEdit($userId, $content)
+    {   
+        Db::startTrans();
+        try
+        {
+            $category = CategoryModel::where(['id' => $content['id']])->find();
+            $category->user_id = $userId;
+            $category->name = $content['categoryName'];
+            $category->image = $content['categoryImageId'];
+
+            $category->time = time();
+    
+            $category->save();
+
+            return $category->id;
         }
         catch (Exception $ex)
         {
@@ -198,6 +238,33 @@ Mozilla/5.0 (Windows NT 6.1; WOW64; rv:38.0) Gecko/20100101 Firefox/38.0 FirePHP
         return array($imageId, $imageDetailId);
     }
 
+    public static function shoppingCartAdd($userId, $content)
+    {
+        $shopingCart = new ShoppingCartModel();
+        $shopingCart->user_id = $userId;
+        $shopingCart->good_id = $content['goodId'];
+        $shopingCart->good_name = $content['goodName'];
+
+        $shopingCart->count = $content['goodCount'];
+        $shopingCart->image_id = $content['imageId'];
+        $shopingCart->image_url = $content['imageUrl'];
+
+        $shopingCart->market_price = $content['goodPrice'];
+
+        $shopingCart->save();
+
+        return $shopingCart->id;
+    }
+
+    public static function getShoppingCart($userId)
+    {
+        return ShoppingCartModel::all(['user_id' => $userId]);
+    }
+
+    public static function shoppingCartDelete($id)
+    {
+        ShoppingCartModel::destroy(['id' => $id]);
+    }
 
     public static function getGoodInfo($id)
     {
@@ -227,6 +294,10 @@ Mozilla/5.0 (Windows NT 6.1; WOW64; rv:38.0) Gecko/20100101 Firefox/38.0 FirePHP
         return array('result' => 'ok', 'goodInfo' => $goodInfo, 'address' => $address, 'shopInfo' => $shopInfo->toArray());
     }
 
+    public static function getCategoryInfo()
+    {
+        return CategoryModel::getCategoryInfo();
+    }
     public static function createGoodImage($goodId, $images, $detailImage)
     {   
         $imagesId = array_values($images);
@@ -296,7 +367,7 @@ Mozilla/5.0 (Windows NT 6.1; WOW64; rv:38.0) Gecko/20100101 Firefox/38.0 FirePHP
         $goodDb->goodCategory = $content['goodCategory'];
         $goodDb->market_price = $content['market_price'];
         $goodDb->good_stock = $content['good_stock'];
-
+        $goodDb->image_head_id = $content['image_head_id'];
         $goodDb->save();
         return ;
     }

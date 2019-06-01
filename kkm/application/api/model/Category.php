@@ -7,8 +7,15 @@ class Category extends BaseModel
         'delete_time', 'update_time', 'create_time'
     ];
     
-    public function img()
+    public function image()
     {
-        return $this->belongsTo('Image', 'topic_img_id', 'id');
+        return $this->hasOne('Image', 'id', 'image');
     }
+
+    public static function getCategoryInfo()
+    {
+        return self::with(['image'])->select()->toArray();
+    }
+
+
 }

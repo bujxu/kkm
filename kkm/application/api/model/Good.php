@@ -13,6 +13,11 @@ class Good extends BaseModel
         return $this->hasMany('goodImage', 'good_id', 'id');
     }
 
+    public function headImage()
+    {
+        return $this->hasOne('image', 'id', 'image_head_id');
+    }
+
     public static function getGroupUserCommit($groupId, $userId)
     {
         $commitList = self::where(['group_id' => $groupId, 'user_id' => $userId])->with(['commitImages', 'commitImages.image'])->select();
@@ -28,7 +33,7 @@ class Good extends BaseModel
 
     public static function getGoodList($userId)
     {
-        $goodList = self::where(['user_id' => $userId])->with(['goodImages', 'goodImages.image'])->select()->toArray();
+        $goodList = self::where(['user_id' => $userId])->with(['goodImages', 'goodImages.image', 'headImage'])->select()->toArray();
 
         return $goodList;
     }

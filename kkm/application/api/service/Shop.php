@@ -296,6 +296,16 @@ Mozilla/5.0 (Windows NT 6.1; WOW64; rv:38.0) Gecko/20100101 Firefox/38.0 FirePHP
                 // array_push($goodList[$index], self::getImageUrl($imagesTemp[$index]));
                 $goodList[$index]['imageUrl'] =  GoodService::getImageUrls($goodList[$index]);
                 $goodList[$index]['imageId'] = GoodService::getImageId($goodList[$index]);
+                if ($goodList[$index]['image_head_id'])
+                {
+                    $map['id']  = ['id' => ['eq' , $goodList[$index]['image_head_id']]];
+                    $image = ImageModel::where($map['id'])->find();
+                    if ($image != null)
+                    {
+                        $image = $image->toArray();
+                        $goodList[$index]['image_head_url'] = $image['url'];
+                    }
+                }
                 // $goodList[$index]['goodCategory'] = unserialize($goodList[$index]['goodCategory']);
             }
             $userInfo = UserModel::getUserInfoById($shopInfo['user_id']);
@@ -350,7 +360,9 @@ Mozilla/5.0 (Windows NT 6.1; WOW64; rv:38.0) Gecko/20100101 Firefox/38.0 FirePHP
 
             $goodList = GoodService::getGoodByUserId($shopInfo['user_id']);
             $imagesTemp = array_column($goodList, 'good_images');
-    
+            $headImage = array_column($goodList, 'head_image');
+            $shopInfo['headImageId'] = array_values(array_column($headImage, 'id'));
+            $shopInfo['headImageUrl'] = array_values(array_column($headImage, 'url'));
             for ($index = 0; $index < count($imagesTemp); $index++) {
                 $goodList[$index]['imageUrl'] =  self::getImageUrl($imagesTemp[$index]);
             }
