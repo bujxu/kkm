@@ -40,7 +40,12 @@ class Good
     public function getShoppingCart()
     {
         $userId = TokenService::getCurrentUid();
-        return GoodService::getShoppingCart($userId);
+        $address = UserAddress::where(['user_id' => $userId, 'status' => 'DEFAULT'])->find();
+        if ($address != null)
+        {
+            $address = $address->toArray();
+        }
+        return ['shoppingCart' => GoodService::getShoppingCart($userId), 'address' => $address];
     }
 
     public function getCategory()

@@ -11,59 +11,63 @@ use app\api\service\Shop as ShopService;
 
 class Order
 {
-    public $input;
-    public $products;
-    public $uid;
-
-    public function place($uid, $input)
-    {
-        $this->input = $input;
-        $this->uid = $uid;
-        // $this->products = $this->getProductsByOrder($input);
-        // $status = $this->getOrderStatus();
-        // if (!$status['pass'])
-        // {
-        //     $status['order_id'] = -1;
-        //     return $status;
-        // }
-
-        // $orderSnap = $this->snapOrder($status);
-        $order = $this->createOrder();
-        return $order;
-    }
-
-    public function createOrder()
+    public static function orderCreate($uid, $input)
     {
         Db::startTrans();
         try
         {
-            $orderNo = $this->makeOrderNo();
+            $orderNo = self::makeOrderNo();
             $order = new \app\api\model\Order();
-            $address = UserAddress::get(['id' => $this->input['address_id']]);
-            $good = GoodModel::get(['id' => $this->input['good_id']]);
+            $address = UserAddress::get(['id' => $input['address_id']]);
+            // $good = GoodModel::get(['id' => $input['good_id']]);
 
-            $order->image_url = $good->image_url;
-            $order->user_id = $this->uid;
+            $order->user_id = $uid;
             $order->order_no = $orderNo;
-            $order->totalPrice = $this->input['totalPrice'];
+            $order->totalPrice = $input['totalPrice'];
             $order->address_detail = $address->address_detail;
             $order->house_number = $address->house_number;
             $order->contact = $address->contact;
             $order->phone_number = $address->phone_number;
-            $order->goodSpecification = $this->input['goodSpecification'];
-            $order->good_id =  $this->input['good_id'];
-            $order->good_owner_id = $good->user_id;
-            $order->goodCount = $this->input['goodCount'];
-            $order->good_name = $good->good_name;
-            $order->good_desc = $good->good_desc;
-            $order->goodCategory = $good->goodCategory;
-            $order->image_url = $good->image_url;
+            $order->shoppingCart = serialize($input['shoppingCart']);
+            // for ($index = 0; $index < count($input['goodIds']); $index++)
+            // {
+            //     $orderGood = new OrderGoodModel();
+            
+            //     $orderGood->good_id = $goodIds[$index];
+            //     $orderGood->order_id = $goodId;
+            //     $orderGood->save();
+            // }
+            // $order->goodSpecification = $this->input['goodSpecification'];
+            // $order->good_id =  $this->input['good_id'];
+            // $order->good_owner_id = $good->user_id;
+            // $order->goodCount = $this->input['goodCount'];
+            // $order->good_name = $good->good_name;
+            // $order->good_desc = $good->good_desc;
+            // $order->goodCategory = $good->goodCategory;
+            // $order->image_url = $good->image_url;
+ 
             $order->status = 0;
             $order->save();
 
             $orderID = $order->id;
             $create_time = $order->create_time;
 
+
+            // $length = count($input['goodIds']);
+            // for ($index = 0; $index < $length; $index++)
+            // {
+            //     $orderGood = new OrderGoodModel();
+            
+            //     $orderGood->good_id = $goodIds[$index];
+            //     $orderGood->order_id = $orderID;
+
+            //     $orderGood->good_count = $input['goodCount'][$index];
+            //     $orderGood->good_name = $good->good_name;
+            //     $orderGood->good_desc = $good->good_desc;
+            //     $orderGood->image_url = $good->image_url;
+            //     $orderGood->save();
+            // }
+        
             // foreach ($this->input as &$p)
             // {
             //     $p['order_id'] = $orderID;
@@ -206,15 +210,15 @@ class Order
             return ['result' => 'failed'];
         }
         
-        if ($order->status > 1)
-        {
-            $order['orderImageUrl'] =  self::getImageUrls($order);
-        }
+        // if ($order->status > 1)
+        // {
+        //     $order['orderImageUrl'] =  self::getImageUrls($order);
+        // }
 
-        $image = ImageModel::get(['id' => $order->image_url]);
-        // $order = $order->toArray();
-        $order['image_url'] = $image->url;
-
+        // $image = ImageModel::get(['id' => $order->image_url]);
+        // // $order = $order->toArray();
+        // $order['image_url'] = $image->url;
+        $order['shoppingCart'] = unserialize($order['shoppingCart']);
         return ['result' => 'ok', 'order' => $order->toArray()];
     }
 
@@ -228,18 +232,19 @@ class Order
         
         for ($index = 0; $index < count($result); $index++)
         {
-            if ($result[$index]['image_url'] != null)
-            {
-                $image = ImageModel::get(['id' => $result[$index]['image_url']]);
-                if ($image != null)
-                {
-                    $result[$index]['image_url'] = $image->url;
-                }
+            $result[$index]['shoppingCart'] = unserialize($result[$index]['shoppingCart']);
+            // if ($result[$index]['image_url'] != null)
+            // {
+            //     $image = ImageModel::get(['id' => $result[$index]['image_url']]);
+            //     if ($image != null)
+            //     {
+            //         $result[$index]['image_url'] = $image->url;
+            //     }
 
-            }
+            // }
 
-            $result[$index]['goodCategory'] = json_decode($result[$index]['goodCategory'], true);
-            $result[$index]['goodCount'] = json_decode($result[$index]['goodCount'], true);
+            // $result[$index]['goodCategory'] = json_decode($result[$index]['goodCategory'], true);
+            // $result[$index]['goodCount'] = json_decode($result[$index]['goodCount'], true);
         }
         
         return $result;

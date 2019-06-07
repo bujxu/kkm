@@ -18,8 +18,7 @@ class Order extends \app\api\controller\BaseController
         $input = input('post.');
         $uid = TokenService::getCurrentUid();
         
-        $order = new OrderService();
-        $status = $order->place($uid, $input);
+        $status = OrderService::orderCreate($uid, $input);
         
         return $status;
     }
